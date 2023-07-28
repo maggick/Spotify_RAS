@@ -1,3 +1,3 @@
 export default {
-  base: '/random-spotify/'
+  base: '/Spotify_RAS/'
 }
