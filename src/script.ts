@@ -24,25 +24,60 @@ async function main(){
     btn.addEventListener("click", () => redirectToAuthCodeFlow(clientId));
 
   } else {
-    const accessToken = await getAccessToken(clientId, code);
-    const albumsList = await fetchAlbums(accessToken);
+    const html_control = document.getElementById('controls')!;
 
-    const randomAlbumsList = _.sampleSize(albumsList,2); //FIXME
+    var ihm_number = document.createElement('input');
+    ihm_number.setAttribute('type', 'number');
+    ihm_number.setAttribute('value', '1');
+    ihm_number.setAttribute('id', 'number');
+    html_control.appendChild(ihm_number);
 
-    await addToQueue(randomAlbumsList, accessToken);
-    populateUI(randomAlbumsList);
+    var ihm_select = document.createElement('select');
+    ihm_select.setAttribute('id', 'select')
+
+    var option1 = document.createElement('option');
+    option1.setAttribute('value', 'albums')
+    option1.appendChild(document.createTextNode('Saved albums'));
+    ihm_select.appendChild(option1);
+
+    var option2 = document.createElement('option');
+    option2.setAttribute('value', 'tracks')
+    option2.appendChild(document.createTextNode('Saved tracks'));
+    ihm_select.appendChild(option2);
+
+    html_control.appendChild(ihm_select);
+
+    var button = document.createElement('input');
+    button.setAttribute('type', 'button');
+    button.setAttribute('value', 'GO');
+    button.setAttribute('id', 'button');
+
+    html_control.appendChild(button);
+
+    let btn = document.getElementById("button")!;
+    btn.addEventListener("click", () =>{
+      var select = (<HTMLInputElement>document.getElementById("select")).value
+      if (select === 'albums'){
+        getAlbums(code)
+      }
+      if (select === 'tracks'){
+        getTracks(code)
+      }
+    });
   }
 }
 
-async function addToQueue(albums: Album[], code: string){
-  for (const album of albums){
-    for (const track of album.tracks.items){
-      await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
-        method: "POST", headers: { Authorization: `Bearer ${code}` }
-      });
-    }
-  }
+async function getAlbums(code: string){
+  let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
 
+  const accessToken = await getAccessToken(clientId, code);
+  const albumsList = await fetchAlbums(accessToken);
+
+  const randomAlbumsList = _.sampleSize(albumsList, i_number);
+
+  addAlbumToQueue(randomAlbumsList, accessToken);
+
+  populateUI(randomAlbumsList);
 }
 
 async function fetchAlbums(code: string): Promise<Album[]>{
@@ -65,17 +100,66 @@ async function fetchAlbums(code: string): Promise<Album[]>{
   return albums;
 }
 
-function populateUI(albums: Album[]) {
-    //document.getElementById("url")!.setAttribute("href", profile.href);
+async function getTracks(code: string){
+    let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
 
+    const accessToken = await getAccessToken(clientId, code);
+    const trackList = await fetchTracks(accessToken);
 
+    const randomTrackList = _.sampleSize(trackList, i_number);
 
+    addTrackToQueue(randomTrackList, accessToken)
+
+    //populateUI(randomAlbumsList);
+}
+
+async function fetchTracks(code: string): Promise<Track[]>{
+  let savedTrackList: SavedTracksList;
+  let tracks: Track[] = [];
+
+  var offset = 0;
+  do {
+    const result = await fetch("https://api.spotify.com/v1/me/tracks?offset="+offset+"&limit=50", {
+      method: "GET", headers: { Authorization: `Bearer ${code}` }
+    });
+
+    savedTrackList = await result.json();
+    savedTrackList.items.forEach(item =>{
+      tracks.push(item.track)
+    })
+    offset +=50;
+  } while (savedTrackList.next != null)
+
+  return tracks;
+}
+
+async function addAlbumToQueue(albums: Album[], code: string){
+  for (const album of albums){
+    for (const track of album.tracks.items){
+      await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
+        method: "POST", headers: { Authorization: `Bearer ${code}` }
+      });
+    }
+  }
+}
+
+async function addTrackToQueue(tracks: Track[], code: string){
+    for (const track of tracks){
+      await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
+        method: "POST", headers: { Authorization: `Bearer ${code}` }
+      });
+    }
+}
+
+async function populateUI(albums: Album[]) {
     var list = document.createElement('ul');
+
     for (const album of albums){
       var item = document.createElement('li');
       item.appendChild(document.createTextNode(album.name));
       list.appendChild(item)
     }
+
     var title = document.createElement('h2');
     if (albums.length == 1){
       title.appendChild(document.createTextNode("The following album was added to your queue:"))
@@ -83,6 +167,7 @@ function populateUI(albums: Album[]) {
     else{
       title.appendChild(document.createTextNode("The following albums were added to your queue:"))
     }
+
     const html_albums = document.getElementById('albums')!;
     html_albums.appendChild(title);
     html_albums.appendChild(list);

@@ -29,7 +29,6 @@ interface AlbumsList{
 interface Item{
   added_at: string;
   album: Album;
-
 }
 
 interface Album{
@@ -62,6 +61,21 @@ interface TracksList{
 interface Track{
   id: string
   name: string
+}
+
+interface SavedTracksList{
+  href: string;
+  limit: int;
+  next: string;
+  offset: int;
+  previous: string;
+  total: int
+  items: SavedTracks[]
+}
+
+interface SavedTracks{
+  added_at: string;
+  track: Track;
 }
 
 interface Image {
