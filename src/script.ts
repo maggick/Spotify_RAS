@@ -6,11 +6,12 @@ import * as _ from "lodash";
 const clientId = "1ba0ff92a7bc4f5bb2049b4614f0f9e9";
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
+const token = params.get("token")!;
 
 main()
 
 async function main(){
-  if (!code) {
+  if (!code && !token) {
     const html_control = document.getElementById('controls')!;
 
     var button = document.createElement('input');
@@ -23,7 +24,12 @@ async function main(){
 
     btn.addEventListener("click", () => redirectToAuthCodeFlow(clientId));
 
-  } else {
+  } else if(!token && code) {
+    const accessToken = await getAccessToken(clientId, code);
+    window.location.replace("./?token="+accessToken);
+
+  } else if (token && !code){
+
     const html_control = document.getElementById('controls')!;
 
     var ihm_number = document.createElement('input');
@@ -58,31 +64,36 @@ async function main(){
     btn.addEventListener("click", () =>{
       var select = (<HTMLInputElement>document.getElementById("select")).value
       if (select === 'albums'){
-        getAlbums(code)
+        getAlbums()
       }
       if (select === 'tracks'){
-        getTracks(code)
+        getTracks()
       }
     });
   }
 }
 
-async function getAlbums(code: string){
+async function getAlbums(){
   let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
 
-  const accessToken = await getAccessToken(clientId, code);
-  const albumsList = await fetchAlbums(accessToken);
+  const albumsList = await fetchAlbums(token);
 
   const randomAlbumsList = _.sampleSize(albumsList, i_number);
 
-  addAlbumToQueue(randomAlbumsList, accessToken);
+  addAlbumToQueue(randomAlbumsList, token);
 
-  populateUI(randomAlbumsList);
+  populateUIAlbum(randomAlbumsList);
 }
 
 async function fetchAlbums(code: string): Promise<Album[]>{
   let albumsList: AlbumsList;
   let albums: Album[] = [];
+
+  const html_albums = document.getElementById('albums')!;
+  var title = document.createElement('h2');
+  title.appendChild(document.createTextNode("Loading your albums, please wait."))
+  html_albums.innerHTML = "";
+  html_albums.appendChild(title);
 
   var offset = 0;
   do {
@@ -100,22 +111,27 @@ async function fetchAlbums(code: string): Promise<Album[]>{
   return albums;
 }
 
-async function getTracks(code: string){
+async function getTracks(){
     let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
 
-    const accessToken = await getAccessToken(clientId, code);
-    const trackList = await fetchTracks(accessToken);
+    const trackList = await fetchTracks(token);
 
     const randomTrackList = _.sampleSize(trackList, i_number);
 
-    addTrackToQueue(randomTrackList, accessToken)
+    addTrackToQueue(randomTrackList, token)
 
-    //populateUI(randomAlbumsList);
+    populateUITracks(randomTrackList);
 }
 
 async function fetchTracks(code: string): Promise<Track[]>{
   let savedTrackList: SavedTracksList;
   let tracks: Track[] = [];
+
+  const html_albums = document.getElementById('albums')!;
+  var title = document.createElement('h2');
+  title.appendChild(document.createTextNode("Loading your tracks, please wait."))
+  html_albums.innerHTML = "";
+  html_albums.appendChild(title);
 
   var offset = 0;
   do {
@@ -141,17 +157,25 @@ async function addAlbumToQueue(albums: Album[], code: string){
       });
     }
   }
+  const html_albums = document.getElementById('albums')!;
+  var title = document.createElement('h2');
+  title.appendChild(document.createTextNode("Done"))
+  html_albums.prepend(title);
 }
 
 async function addTrackToQueue(tracks: Track[], code: string){
-    for (const track of tracks){
-      await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
-        method: "POST", headers: { Authorization: `Bearer ${code}` }
-      });
-    }
+  for (const track of tracks){
+    await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
+      method: "POST", headers: { Authorization: `Bearer ${code}` }
+    });
+  }
+  const html_albums = document.getElementById('albums')!;
+  var title = document.createElement('h2');
+  title.appendChild(document.createTextNode("Done"))
+  html_albums.prepend(title);
 }
 
-async function populateUI(albums: Album[]) {
+async function populateUIAlbum(albums: Album[]) {
     var list = document.createElement('ul');
 
     for (const album of albums){
@@ -162,13 +186,37 @@ async function populateUI(albums: Album[]) {
 
     var title = document.createElement('h2');
     if (albums.length == 1){
-      title.appendChild(document.createTextNode("The following album was added to your queue:"))
+      title.appendChild(document.createTextNode("We are adding the following album to your queue, please wait."))
     }
     else{
-      title.appendChild(document.createTextNode("The following albums were added to your queue:"))
+      title.appendChild(document.createTextNode("We are adding the following albums to your queue, please wait."))
     }
 
     const html_albums = document.getElementById('albums')!;
+    html_albums.innerHTML = "";
+    html_albums.appendChild(title);
+    html_albums.appendChild(list);
+}
+
+async function populateUITracks(tracks: Track[]) {
+    var list = document.createElement('ul');
+
+    for (const track of tracks){
+      var item = document.createElement('li');
+      item.appendChild(document.createTextNode(track.name));
+      list.appendChild(item)
+    }
+
+    var title = document.createElement('h2');
+    if (tracks.length == 1){
+      title.appendChild(document.createTextNode("We are adding the following track to your queue, please wait."))
+    }
+    else{
+      title.appendChild(document.createTextNode("We are adding the following tracks to your queue, please wait."))
+    }
+
+    const html_albums = document.getElementById('albums')!;
+    html_albums.innerHTML = "";
     html_albums.appendChild(title);
     html_albums.appendChild(list);
 }
