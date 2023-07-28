@@ -11,7 +11,18 @@ main()
 
 async function main(){
   if (!code) {
-    redirectToAuthCodeFlow(clientId);
+    const html_control = document.getElementById('controls')!;
+
+    var button = document.createElement('input');
+    button.setAttribute('type', 'button');
+    button.setAttribute('value', 'Login to spotify');
+    button.setAttribute('id', 'button');
+    html_control.appendChild(button);
+
+    let btn = document.getElementById("button")!;
+
+    btn.addEventListener("click", () => redirectToAuthCodeFlow(clientId));
+
   } else {
     const accessToken = await getAccessToken(clientId, code);
     const albumsList = await fetchAlbums(accessToken);
