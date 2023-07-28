@@ -1,4 +1,5 @@
-const redirect_uri = "https://maggick.fr/Spotify_RAS/callback";
+const redirect_uri = "https://maggick.fr/Spotify_RAS/";      // prod redirect
+//const redirect_uri = "http://localhost:5173/Spotify_RAS/"; // dev redirect
 
 export async function redirectToAuthCodeFlow(clientId: string) {
     const verifier = generateCodeVerifier(128);
