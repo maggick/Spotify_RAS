@@ -18,6 +18,7 @@ async function main(){
     button.setAttribute('type', 'button');
     button.setAttribute('value', 'Login to spotify');
     button.setAttribute('id', 'button');
+    button.setAttribute('class', 'btn');
     html_control.appendChild(button);
 
     let btn = document.getElementById("button")!;
@@ -37,11 +38,12 @@ async function main(){
     ihm_number.setAttribute('type', 'number');
     ihm_number.setAttribute('value', '1');
     ihm_number.setAttribute('id', 'number');
+    ihm_number.setAttribute('class', 'input-bordered input');
     html_control.appendChild(ihm_number);
 
     var ihm_select = document.createElement('select');
     ihm_select.setAttribute('id', 'select')
-
+    ihm_select.setAttribute('class', 'select select-bordered w-full max-w-xs');
     var option1 = document.createElement('option');
     option1.setAttribute('value', 'albums')
     option1.appendChild(document.createTextNode('Saved albums'));
@@ -55,6 +57,7 @@ async function main(){
     html_control.appendChild(ihm_select);
 
     var button = document.createElement('input');
+    button.setAttribute('class', 'btn');
     button.setAttribute('type', 'button');
     button.setAttribute('value', 'GO');
     button.setAttribute('id', 'button');
@@ -94,8 +97,11 @@ async function fetchAlbums(code: string): Promise<Album[]>{
   const html_albums = document.getElementById('albums')!;
   var title = document.createElement('h2');
   title.appendChild(document.createTextNode("Loading your albums, please wait."))
+  var ihm_loading = document.createElement('span');
+  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
   html_albums.innerHTML = "";
   html_albums.appendChild(title);
+  html_albums.appendChild(ihm_loading);
 
   var offset = 0;
   do {
@@ -133,8 +139,11 @@ async function fetchTracks(code: string): Promise<Track[]>{
   const html_albums = document.getElementById('albums')!;
   var title = document.createElement('h2');
   title.appendChild(document.createTextNode("Loading your tracks, please wait."))
+  var ihm_loading = document.createElement('span');
+  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
   html_albums.innerHTML = "";
   html_albums.appendChild(title);
+  html_albums.appendChild(ihm_loading);
 
   var offset = 0;
   do {
@@ -190,8 +199,22 @@ async function populateUIAlbum(albums: Album[], done: Boolean) {
       title.appendChild(document.createTextNode("We are adding the following albums to your queue, please wait."))
     }
 
+    if (done && albums.length == 1){
+      title.appendChild(document.createTextNode("The following album was added to your queue."))
+    }
+    else if (done && albums.length > 1){
+      title.appendChild(document.createTextNode("The following albums were added to your queue."))
+    }
+
+    var ihm_loading = document.createElement('span');
+
     const html_albums = document.getElementById('albums')!;
     html_albums.innerHTML = "";
+    if (!done){
+      ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg');
+      html_albums.appendChild(ihm_loading);
+    }
+
     html_albums.appendChild(title);
     html_albums.appendChild(list);
 }
@@ -214,7 +237,11 @@ async function populateUITracks(tracks: Track[], done: boolean) {
     }
 
     const html_albums = document.getElementById('albums')!;
+    var ihm_loading = document.createElement('span');
+    ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
+    html_albums.appendChild(title);
     html_albums.innerHTML = "";
     html_albums.appendChild(title);
     html_albums.appendChild(list);
 }
+
