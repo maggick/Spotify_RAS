@@ -39,6 +39,7 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Build CSS
         run: npx tailwindcss -i ./src/input.css -o ./dist/tailwind.css
       - name: Setup Pages
         uses: actions/configure-pages@v3
