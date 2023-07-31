@@ -32,6 +32,10 @@ async function main(){
 
   } else if (token && !code){
 
+    setTimeout(() => {
+      logout();
+    }, (3600*1000/2));
+
     const html_control = document.getElementById('controls')!;
 
     var ihm_number = document.createElement('input');
@@ -181,6 +185,10 @@ async function addTrackToQueue(tracks: Track[], code: string){
 
   populateUI(tracks, true, "track");
 }
+
+async function logout(){
+  localStorage.clear();
+  window.location.replace("./");
 
 }
 
