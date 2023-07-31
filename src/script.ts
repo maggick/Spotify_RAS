@@ -84,7 +84,7 @@ async function getAlbums(){
 
   addAlbumToQueue(randomAlbumsList, token);
 
-  populateUIAlbum(randomAlbumsList);
+  populateUIAlbum(randomAlbumsList, false);
 }
 
 async function fetchAlbums(code: string): Promise<Album[]>{
@@ -123,7 +123,7 @@ async function getTracks(){
 
   addTrackToQueue(randomTrackList, token)
 
-    populateUITracks(randomTrackList);
+  populateUITracks(randomTrackList, false);
 }
 
 async function fetchTracks(code: string): Promise<Track[]>{
@@ -160,10 +160,7 @@ async function addAlbumToQueue(albums: Album[], code: string){
       });
     }
   }
-  const html_albums = document.getElementById('albums')!;
-  var title = document.createElement('h2');
-  title.appendChild(document.createTextNode("Done"))
-  html_albums.prepend(title);
+  populateUIAlbum(albums, true);
 }
 
 async function addTrackToQueue(tracks: Track[], code: string){
@@ -172,13 +169,11 @@ async function addTrackToQueue(tracks: Track[], code: string){
       method: "POST", headers: { Authorization: `Bearer ${code}` }
     });
   }
-  const html_albums = document.getElementById('albums')!;
-  var title = document.createElement('h2');
-  title.appendChild(document.createTextNode("Done"))
-  html_albums.prepend(title);
+
+  populateUITracks(tracks, true)
 }
 
-async function populateUIAlbum(albums: Album[]) {
+async function populateUIAlbum(albums: Album[], done: Boolean) {
     var list = document.createElement('ul');
 
     for (const album of albums){
@@ -188,10 +183,10 @@ async function populateUIAlbum(albums: Album[]) {
     }
 
     var title = document.createElement('h2');
-    if (albums.length == 1){
+    if (!done && albums.length == 1){
       title.appendChild(document.createTextNode("We are adding the following album to your queue, please wait."))
     }
-    else{
+    else if (!done && albums.length > 1){
       title.appendChild(document.createTextNode("We are adding the following albums to your queue, please wait."))
     }
 
@@ -201,8 +196,8 @@ async function populateUIAlbum(albums: Album[]) {
     html_albums.appendChild(list);
 }
 
-async function populateUITracks(tracks: Track[]) {
-    var list = document.createElement('ul');
+async function populateUITracks(tracks: Track[], done: boolean) {
+    var list = document.createElement('ol');
 
     for (const track of tracks){
       var item = document.createElement('li');
