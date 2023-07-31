@@ -6,11 +6,11 @@ import * as _ from "lodash";
 const clientId = "1ba0ff92a7bc4f5bb2049b4614f0f9e9";
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
-const token = params.get("token")!;
 
 main()
 
 async function main(){
+  const token = localStorage.getItem('token');
   if (!code && !token) {
     const html_control = document.getElementById('controls')!;
 
@@ -26,7 +26,8 @@ async function main(){
 
   } else if(!token && code) {
     const accessToken = await getAccessToken(clientId, code);
-    window.location.replace("./?token="+accessToken);
+    localStorage.setItem ('token', accessToken)
+    window.location.replace("./");
 
   } else if (token && !code){
 
@@ -76,6 +77,7 @@ async function main(){
 async function getAlbums(){
   let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
 
+  const token=localStorage.getItem('token')!;
   const albumsList = await fetchAlbums(token);
 
   const randomAlbumsList = _.sampleSize(albumsList, i_number);
@@ -108,17 +110,18 @@ async function fetchAlbums(code: string): Promise<Album[]>{
     offset +=50;
   } while (albumsList.next != null)
 
-  return albums;
+    return albums;
 }
 
 async function getTracks(){
-    let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
+  let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
 
-    const trackList = await fetchTracks(token);
+  const token=localStorage.getItem('token')!;
+  const trackList = await fetchTracks(token);
 
-    const randomTrackList = _.sampleSize(trackList, i_number);
+  const randomTrackList = _.sampleSize(trackList, i_number);
 
-    addTrackToQueue(randomTrackList, token)
+  addTrackToQueue(randomTrackList, token)
 
     populateUITracks(randomTrackList);
 }
