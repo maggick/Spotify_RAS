@@ -83,6 +83,9 @@ async function main(){
 
 async function getAlbums(){
   let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
+  if (i_number <= 0){
+    window.location.replace("./");
+  }
 
   const token=localStorage.getItem('token')!;
   const albumsList = await fetchAlbums(token);
@@ -125,6 +128,9 @@ async function fetchAlbums(code: string): Promise<Album[]>{
 
 async function getTracks(){
   let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
+  if (i_number <= 0){
+    window.location.replace("./");
+  }
 
   const token=localStorage.getItem('token')!;
   const trackList = await fetchTracks(token);
