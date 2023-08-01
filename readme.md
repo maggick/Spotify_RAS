@@ -19,7 +19,10 @@ Clone the repository, replace the value for clientId in `/src/script.ts` with yo
 ```bash
 npm install
 npm run dev
+npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch
 ```
+
+
 
 ## Live Demo
 
