@@ -28,13 +28,11 @@ async function main(){
   } else if(!token && code) {
     const accessToken = await getAccessToken(clientId, code);
     localStorage.setItem ('token', accessToken)
+    const start = Date.now();
+    localStorage.setItem ('token_time', start.toString());
     window.location.replace("./");
 
   } else if (token && !code){
-
-    setTimeout(() => {
-      logout();
-    }, (3600*1000/2));
 
     const html_control = document.getElementById('controls')!;
 
@@ -72,9 +70,11 @@ async function main(){
     btn.addEventListener("click", () =>{
       var select = (<HTMLInputElement>document.getElementById("select")).value
       if (select === 'albums'){
+        logout()
         getAlbums()
       }
       if (select === 'tracks'){
+        logout()
         getTracks()
       }
     });
@@ -187,9 +187,14 @@ async function addTrackToQueue(tracks: Track[], code: string){
 }
 
 async function logout(){
-  localStorage.clear();
-  window.location.replace("./");
+  const now = Date.now();
+  const start = parseInt(localStorage.getItem('token_time')!);
 
+  console.log(now-start)
+  if ((now - start) > 3500*1000){
+    localStorage.clear();
+    window.location.replace("./");
+  }
 }
 
 async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) {
