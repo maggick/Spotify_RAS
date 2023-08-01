@@ -18,7 +18,7 @@ async function main(){
     button.setAttribute('type', 'button');
     button.setAttribute('value', 'Login to spotify');
     button.setAttribute('id', 'button');
-    button.setAttribute('class', 'btn');
+    button.setAttribute('class', 'btn btn-primary');
     html_control.appendChild(button);
 
     let btn = document.getElementById("button")!;
@@ -36,16 +36,19 @@ async function main(){
 
     const html_control = document.getElementById('controls')!;
 
+    var ihm_join_div = document.createElement('div');
+    ihm_join_div.setAttribute('class', 'join')
+
     var ihm_number = document.createElement('input');
     ihm_number.setAttribute('type', 'number');
     ihm_number.setAttribute('value', '1');
     ihm_number.setAttribute('id', 'number');
-    ihm_number.setAttribute('class', 'input-bordered input');
+    ihm_number.setAttribute('class', 'join-item input-bordered input');
     html_control.appendChild(ihm_number);
 
     var ihm_select = document.createElement('select');
     ihm_select.setAttribute('id', 'select')
-    ihm_select.setAttribute('class', 'select select-bordered w-full max-w-xs');
+    ihm_select.setAttribute('class', 'join-item select select-bordered');
     var option1 = document.createElement('option');
     option1.setAttribute('value', 'albums')
     option1.appendChild(document.createTextNode('Saved albums'));
@@ -56,15 +59,17 @@ async function main(){
     option2.appendChild(document.createTextNode('Saved tracks'));
     ihm_select.appendChild(option2);
 
-    html_control.appendChild(ihm_select);
+    ihm_join_div.appendChild(ihm_select);
 
     var button = document.createElement('input');
-    button.setAttribute('class', 'btn');
+    button.setAttribute('class', 'btn btn-primary join-item');
     button.setAttribute('type', 'button');
     button.setAttribute('value', 'GO');
     button.setAttribute('id', 'button');
 
-    html_control.appendChild(button);
+    ihm_join_div.appendChild(button);
+
+    html_control.appendChild(ihm_join_div);
 
     let btn = document.getElementById("button")!;
     btn.addEventListener("click", () =>{
@@ -205,38 +210,39 @@ async function logout(){
 
 async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) {
     var list = document.createElement('ol');
+    list.setAttribute('class', 'list-decimal');
 
     for (const album of albums){
       var item = document.createElement('li');
       item.appendChild(document.createTextNode(album.name));
-      list.appendChild(item)
+      list.appendChild(item);
     }
 
     var title = document.createElement('h2');
     if (!done && albums.length == 1){
-      title.appendChild(document.createTextNode("We are adding the following " + type + " to your queue, please wait."))
+      title.appendChild(document.createTextNode("We are adding the following " + type + " to your queue, please wait."));
     }
     else if (!done && albums.length > 1){
-      title.appendChild(document.createTextNode("We are adding the following " + type + "s to your queue, please wait."))
+      title.appendChild(document.createTextNode("We are adding the following " + type + "s to your queue, please wait."));
     }
 
     if (done && albums.length == 1){
-      title.appendChild(document.createTextNode("The following " + type + " was added to your queue."))
+      title.appendChild(document.createTextNode("The following " + type + " was added to your queue."));
     }
     else if (done && albums.length > 1){
-      title.appendChild(document.createTextNode("The following " + type + "s were added to your queue."))
+      title.appendChild(document.createTextNode("The following " + type + "s were added to your queue."));
     }
 
     var ihm_loading = document.createElement('span');
     const html_albums = document.getElementById('albums')!;
     html_albums.innerHTML = "";
+
+    html_albums.appendChild(title);
+    html_albums.appendChild(list);
     if (!done){
       ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg');
       html_albums.appendChild(ihm_loading);
     }
-
-    html_albums.appendChild(title);
-    html_albums.appendChild(list);
 }
 
 
