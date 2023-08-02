@@ -194,8 +194,8 @@ async function populateUILoading(type: string){
 }
 
 async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) {
-    var list = document.createElement('ol');
-    list.setAttribute('class', 'list-decimal');
+    var list = document.createElement('ul');
+    list.setAttribute('class', 'list-none');
 
     for (const album of albums){
       var item = document.createElement('li');
