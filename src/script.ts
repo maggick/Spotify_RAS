@@ -155,16 +155,12 @@ async function fetchTracks(code: string): Promise<Track[]>{
 
 async function addAlbumToQueue(albums: Album[], code: string){
   for (const album of albums){
-    for (const track of album.tracks.items){
-      await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
-        method: "POST", headers: { Authorization: `Bearer ${code}` }
-      });
-    }
+    await addTrackToQueue(album.tracks.items, code, true)
   }
   populateUI(albums, true, "album");
 }
 
-async function addTrackToQueue(tracks: Track[], code: string){
+async function addTrackToQueue(tracks: Track[], code: string, fromAlbum: boolean){
   for (const track of tracks){
     await fetch("https://api.spotify.com/v1/me/player/queue?uri=spotify%3Atrack%3A"+track.id,{
       method: "POST", headers: { Authorization: `Bearer ${code}` }
