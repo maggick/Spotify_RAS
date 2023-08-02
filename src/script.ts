@@ -204,19 +204,26 @@ async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) 
     }
 
     var title = document.createElement('h2');
-    if (!done && albums.length == 1){
-      title.appendChild(document.createTextNode("We are adding the following " + type + " to your queue, please wait."));
-    }
-    else if (!done && albums.length > 1){
-      title.appendChild(document.createTextNode("We are adding the following " + type + "s to your queue, please wait."));
+    var status = "";
+    if (!done){
+      status = "We are adding the following " + type;
+      if (albums.length > 1){
+        status += "s";
+      }
+      status += " to your queue, please wait.";
     }
 
-    if (done && albums.length == 1){
-      title.appendChild(document.createTextNode("The following " + type + " was added to your queue."));
+    if (done){
+      status = "The following " + type;
+      if (albums.length > 1){
+        status += "s were";
+      }
+      else {
+        status += " was";
+      }
+      status += " added to your queue.";
     }
-    else if (done && albums.length > 1){
-      title.appendChild(document.createTextNode("The following " + type + "s were added to your queue."));
-    }
+      title.appendChild(document.createTextNode(status));
 
     var ihm_loading = document.createElement('span');
     const html_albums = document.getElementById('albums')!;
