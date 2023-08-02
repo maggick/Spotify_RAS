@@ -76,30 +76,37 @@ async function main(){
       var select = (<HTMLInputElement>document.getElementById("select")).value
       if (select === 'albums'){
         logout()
-        getAlbums()
+        getData('album')
       }
       if (select === 'tracks'){
         logout()
-        getTracks()
+        getData('track')
       }
     });
   }
 }
 
-async function getAlbums(){
+async function getData(type: string){
   let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
   if (i_number <= 0){
     window.location.replace("./");
   }
 
   const token=localStorage.getItem('token')!;
-  const albumsList = await fetchAlbums(token);
 
-  const randomAlbumsList = _.sampleSize(albumsList, i_number);
+  if (type ==='album'){
+    const albumsList = await fetchAlbums(token);
+    const randomAlbumsList = _.sampleSize(albumsList, i_number);
+    addAlbumToQueue(randomAlbumsList, token);
+    populateUI(randomAlbumsList, false, type);
+  }
 
-  addAlbumToQueue(randomAlbumsList, token);
-
-  populateUI(randomAlbumsList, false, "album");
+  if (type ==='track'){
+    const trackList = await fetchTracks(token);
+    const randomTrackList = _.sampleSize(trackList, i_number);
+    addTrackToQueue(randomTrackList, token, false)
+    populateUI(randomTrackList, false, type);
+  }
 }
 
 async function fetchAlbums(code: string): Promise<Album[]>{
