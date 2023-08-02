@@ -113,14 +113,7 @@ async function fetchAlbums(code: string): Promise<Album[]>{
   let albumsList: AlbumsList;
   let albums: Album[] = [];
 
-  const html_albums = document.getElementById('albums')!;
-  var title = document.createElement('h2');
-  title.appendChild(document.createTextNode("Loading your albums, please wait."))
-  var ihm_loading = document.createElement('span');
-  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
-  html_albums.innerHTML = "";
-  html_albums.appendChild(title);
-  html_albums.appendChild(ihm_loading);
+  populateUILoading('albums');
 
   var offset = 0;
   do {
@@ -138,34 +131,11 @@ async function fetchAlbums(code: string): Promise<Album[]>{
     return albums;
 }
 
-async function getTracks(){
-  let i_number = parseInt((<HTMLInputElement>document.getElementById("number")).value);
-  if (i_number <= 0){
-    window.location.replace("./");
-  }
-
-  const token=localStorage.getItem('token')!;
-  const trackList = await fetchTracks(token);
-
-  const randomTrackList = _.sampleSize(trackList, i_number);
-
-  addTrackToQueue(randomTrackList, token)
-
-  populateUI(randomTrackList, false, "track");
-}
-
 async function fetchTracks(code: string): Promise<Track[]>{
   let savedTrackList: SavedTracksList;
   let tracks: Track[] = [];
 
-  const html_albums = document.getElementById('albums')!;
-  var title = document.createElement('h2');
-  title.appendChild(document.createTextNode("Loading your tracks, please wait."))
-  var ihm_loading = document.createElement('span');
-  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
-  html_albums.innerHTML = "";
-  html_albums.appendChild(title);
-  html_albums.appendChild(ihm_loading);
+  populateUILoading('tracks');
 
   var offset = 0;
   do {
@@ -201,18 +171,30 @@ async function addTrackToQueue(tracks: Track[], code: string){
     });
   }
 
-  populateUI(tracks, true, "track");
+  if (!fromAlbum){
+    populateUI(tracks, true, "track");
+  }
 }
 
 async function logout(){
   const now = Date.now();
   const start = parseInt(localStorage.getItem('token_time')!);
 
-  console.log(now-start)
   if ((now - start) > 3500*1000){
     localStorage.clear();
     window.location.replace("./");
   }
+}
+
+async function populateUILoading(type: string){
+  const html_albums = document.getElementById('albums')!;
+  var title = document.createElement('h2');
+  title.appendChild(document.createTextNode("Loading your " + type + ", please wait."))
+  var ihm_loading = document.createElement('span');
+  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
+  html_albums.innerHTML = "";
+  html_albums.appendChild(title);
+  html_albums.appendChild(ihm_loading);
 }
 
 async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) {
