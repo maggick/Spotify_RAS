@@ -27,7 +27,7 @@ async function main(){
 
   } else if(!token && code) {
     const accessToken = await getAccessToken(clientId, code);
-    localStorage.setItem ('token', accessToken)
+    localStorage.setItem ('token', accessToken);
     const start = Date.now();
     localStorage.setItem ('token_time', start.toString());
     window.location.replace("./");
@@ -37,7 +37,7 @@ async function main(){
     const html_control = document.getElementById('controls')!;
 
     var ihm_join_div = document.createElement('div');
-    ihm_join_div.setAttribute('class', 'join')
+    ihm_join_div.setAttribute('class', 'join');
 
     var ihm_number = document.createElement('input');
     ihm_number.setAttribute('type', 'number');
@@ -47,15 +47,15 @@ async function main(){
     html_control.appendChild(ihm_number);
 
     var ihm_select = document.createElement('select');
-    ihm_select.setAttribute('id', 'select')
+    ihm_select.setAttribute('id', 'select');
     ihm_select.setAttribute('class', 'join-item select select-bordered');
     var option1 = document.createElement('option');
-    option1.setAttribute('value', 'albums')
+    option1.setAttribute('value', 'albums');
     option1.appendChild(document.createTextNode('Saved albums'));
     ihm_select.appendChild(option1);
 
     var option2 = document.createElement('option');
-    option2.setAttribute('value', 'tracks')
+    option2.setAttribute('value', 'tracks');
     option2.appendChild(document.createTextNode('Saved tracks'));
     ihm_select.appendChild(option2);
 
@@ -73,14 +73,14 @@ async function main(){
 
     let btn = document.getElementById("button")!;
     btn.addEventListener("click", () =>{
-      var select = (<HTMLInputElement>document.getElementById("select")).value
+      var select = (<HTMLInputElement>document.getElementById("select")).value;
       if (select === 'albums'){
-        logout()
-        getData('album')
+        logout();
+        getData('album');
       }
       if (select === 'tracks'){
-        logout()
-        getData('track')
+        logout();
+        getData('track');
       }
     });
   }
@@ -104,7 +104,7 @@ async function getData(type: string){
   if (type ==='track'){
     const trackList = await fetchTracks(token);
     const randomTrackList = _.sampleSize(trackList, i_number);
-    addTrackToQueue(randomTrackList, token, false)
+    addTrackToQueue(randomTrackList, token, false);
     populateUI(randomTrackList, false, type);
   }
 }
@@ -123,7 +123,7 @@ async function fetchAlbums(code: string): Promise<Album[]>{
 
     albumsList = await result.json();
     albumsList.items.forEach(item =>{
-      albums.push(item.album)
+      albums.push(item.album);
     })
     offset +=50;
   } while (albumsList.next != null)
@@ -145,7 +145,7 @@ async function fetchTracks(code: string): Promise<Track[]>{
 
     savedTrackList = await result.json();
     savedTrackList.items.forEach(item =>{
-      tracks.push(item.track)
+      tracks.push(item.track);
     })
     offset +=50;
   } while (savedTrackList.next != null)
@@ -155,7 +155,7 @@ async function fetchTracks(code: string): Promise<Track[]>{
 
 async function addAlbumToQueue(albums: Album[], code: string){
   for (const album of albums){
-    await addTrackToQueue(album.tracks.items, code, true)
+    await addTrackToQueue(album.tracks.items, code, true);
   }
   populateUI(albums, true, "album");
 }
@@ -185,9 +185,10 @@ async function logout(){
 async function populateUILoading(type: string){
   const html_albums = document.getElementById('albums')!;
   var title = document.createElement('h2');
-  title.appendChild(document.createTextNode("Loading your " + type + ", please wait."))
+  title.setAttribute('class', 'font-bold');
+  title.appendChild(document.createTextNode("Loading your " + type + ", please wait."));
   var ihm_loading = document.createElement('span');
-  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg')
+  ihm_loading.setAttribute('class', 'loading loading-spinner loading-lg');
   html_albums.innerHTML = "";
   html_albums.appendChild(title);
   html_albums.appendChild(ihm_loading);
