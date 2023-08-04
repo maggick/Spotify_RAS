@@ -224,7 +224,8 @@ async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) 
       }
       status += " added to your queue.";
     }
-      title.appendChild(document.createTextNode(status));
+    title.appendChild(document.createTextNode(status));
+    title.setAttribute('class', 'font-bold');
 
     var ihm_loading = document.createElement('span');
     const html_albums = document.getElementById('albums')!;
