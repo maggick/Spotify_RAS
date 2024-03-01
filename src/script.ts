@@ -34,6 +34,19 @@ async function main(){
 
   } else if (token && !code){
 
+    // logout button
+    const logout_button_div = document.getElementById('logout-button')!;
+    var logout_button = document.createElement('input');
+    logout_button.setAttribute('type', 'button');
+    logout_button.setAttribute('class', 'btn btn-warning');
+    logout_button.setAttribute('value', 'logout');
+    logout_button_div.appendChild(logout_button);
+    logout_button.addEventListener("click", () => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('token_time');
+      document.location.replace('./')
+    } );
+
     const html_control = document.getElementById('controls')!;
 
     var ihm_join_div = document.createElement('div');
