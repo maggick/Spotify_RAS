@@ -213,7 +213,11 @@ async function populateUI(albums: (Track|Album)[], done: Boolean, type: string) 
 
     for (const album of albums){
       var item = document.createElement('li');
-      item.appendChild(document.createTextNode(album.name));
+      var link = document.createElement('a');
+      link.href = album.uri;
+      link.title = album.name;
+      link.appendChild(document.createTextNode(album.name));
+      item.appendChild(link);
       list.appendChild(item);
     }
 
