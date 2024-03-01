@@ -12,11 +12,20 @@ main()
 async function main(){
   const token = localStorage.getItem('token');
   if (!code && !token) {
+    // login button
+    const logout_button_div = document.getElementById('logout-button')!;
+    var logout_button = document.createElement('input');
+    logout_button.setAttribute('type', 'button');
+    logout_button.setAttribute('class', 'btn btn-primary');
+    logout_button.setAttribute('value', 'Login to Spotify');
+    logout_button_div.appendChild(logout_button);
+    logout_button.addEventListener("click", () => redirectToAuthCodeFlow(clientId));
+
     const html_control = document.getElementById('controls')!;
 
     var button = document.createElement('input');
     button.setAttribute('type', 'button');
-    button.setAttribute('value', 'Login to spotify');
+    button.setAttribute('value', 'Login to Spotify');
     button.setAttribute('id', 'button');
     button.setAttribute('class', 'btn btn-primary');
     html_control.appendChild(button);
