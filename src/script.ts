@@ -144,9 +144,13 @@ async function fetchAlbums(code: string): Promise<Album[]>{
     });
 
     albumsList = await result.json();
-    albumsList.items.forEach(item =>{
-      albums.push(item.album);
-    })
+    try{
+      albumsList.items.forEach(item =>{
+        albums.push(item.album);
+      })
+    } catch (TypeError){
+      console.log('Spotify API server error.');
+    }
     offset +=50;
   } while (albumsList.next != null)
 
